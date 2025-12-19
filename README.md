@@ -19,14 +19,14 @@ First clone the GEMSTAR Interfaces plugin to Plugins directory of the Unreal pro
 Add the plugin to your Unreal project:
 
 ```sh
-mkdir Plugins/Gamefeatures
-cd Plugins/Gamefeatures
+mkdir Plugins/GameFeatures
+cd Plugins/GameFeatures
 
-git clone <this repo>
+git clone https://github.com/DLR-TS/ue_esmini_feature.git
 ```
 or:
 ```sh
-git submodule add <this repo>
+git submodule add https://github.com/DLR-TS/ue_esmini_feature.git
 ```
 
 # Configuration
