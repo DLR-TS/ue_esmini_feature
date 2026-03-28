@@ -26,74 +26,77 @@ typedef uint32_t id_t;
 
 typedef struct
 {
-    float x;
-    float y;
-    float z;
+    double x;
+    double y;
+    double z;
 } RM_PositionXYZ;
 
 typedef struct
 {
-    float x;
-    float y;
-    float z;
-    float h;
-    float p;
-    float r;
-    float hRelative;
-    id_t  roadId;
-    id_t  junctionId;  // -1 if not in a junction
-    int   laneId;
-    float laneOffset;
-    float s;
+    double x;
+    double y;
+    double z;
+    double h;
+    double p;
+    double r;
+    double hRelative;
+    id_t   roadId;
+    id_t   junctionId;  // -1 if not in a junction
+    int    laneId;
+    double laneOffset;
+    double s;
 } RM_PositionData;
 
 typedef struct
 {
     RM_PositionXYZ pos;      // position, in global coordinate system
-    float          heading;  // road heading
-    float          pitch;    // road pitch
-    float          roll;     // road roll
-    float          width;
-    float          curvature;
-    float          speed_limit;
-    id_t           roadId;      // target position, road ID
-    id_t           junctionId;  // target position, junction ID. -1 if not in a junction.
-    int            laneId;      // target position, lane ID
-    float          laneOffset;  // target position, lane offset (lateral distance from lane center)
-    float          s;           // target position, s (longitudinal distance along reference line)
-    float          t;           // target position, t (lateral distance from reference line)
+    double         heading;  // road heading
+    double         pitch;    // road pitch
+    double         roll;     // road roll
+    double         width;
+    double         curvature;
+    double         speed_limit;  // m/s
+    id_t           roadId;       // target position, road ID
+    id_t           junctionId;   // target position, junction ID. -1 if not in a junction.
+    int            laneId;       // target position, lane ID
+    double         laneOffset;   // target position, lane offset (lateral distance from lane center)
+    double         s;            // target position, s (longitudinal distance along reference line)
+    double         t;            // target position, t (lateral distance from reference line)
+    int            road_type;    // road type given by OpenDRIVE type entry, maps to roadmanager::Road::RoadType
+    int            road_rule;    // road rule given by OpenDRIVE rule entry, maps to roadmanager::Road::RoadRule
+    int            lane_type;    // lane type given by OpenDRIVE type entry, maps to roadmanager::Road::LaneType
 } RM_RoadLaneInfo;
 
 typedef struct
 {
     RM_RoadLaneInfo road_lane_info;  // Road info at probe location
     RM_PositionXYZ  relative_pos;    // probe position, relative vehicle (pivot position object) coordinate system
-    float           relative_h;      // heading angle to steering target from and relatove to vehicle (pivot position)
+    double          relative_h;      // heading angle to steering target from and relative to vehicle (pivot position)
 } RM_RoadProbeInfo;
 
 typedef struct
 {
-    float ds;       // delta s (longitudinal distance)
-    float dt;       // delta t (lateral distance)
-    int   dLaneId;  // delta laneId (increasing left and decreasing to the right)
+    double ds;       // delta s (longitudinal distance)
+    double dt;       // delta t (lateral distance)
+    int    dLaneId;  // delta laneId (increasing left and decreasing to the right)
 } RM_PositionDiff;
 
 typedef struct
 {
     int         id;           // just an unique identifier of the sign
-    float       x;            // global x coordinate of sign position
-    float       y;            // global y coordinate of sign position
-    float       z;            // global z coordinate of sign position
-    float       z_offset;     // z offset from road level
-    float       h;            // global heading of sign orientation
+    double      x;            // global x coordinate of sign position
+    double      y;            // global y coordinate of sign position
+    double      z;            // global z coordinate of sign position
+    double      z_offset;     // z offset from road level
+    double      h;            // global heading of sign orientation
     id_t        roadId;       // road id of sign road position
-    float       s;            // longitudinal position along road
-    float       t;            // lateral position from road reference line
+    double      s;            // longitudinal position along road
+    double      t;            // lateral position from road reference line
     const char* name;         // sign name, typically used for 3D model filename
     int         orientation;  // 1=facing traffic in road direction, -1=facing traffic opposite road direction
-    float       length;       // length as sepcified in OpenDRIVE
-    float       height;       // height as sepcified in OpenDRIVE
-    float       width;        // width as sepcified in OpenDRIVE
+    double      length;       // length as specified in OpenDRIVE
+    double      height;       // height as specified in OpenDRIVE
+    double      width;        // width as specified in OpenDRIVE
 } RM_RoadSign;
 
 typedef struct
@@ -104,25 +107,25 @@ typedef struct
 
 typedef struct
 {
-    float       a_;
+    double      a_;
     const char* axis_;
-    float       b_;
+    double      b_;
     const char* ellps_;
-    float       k_;
-    float       k_0_;
-    float       lat_0_;
-    float       lon_0_;
-    float       lon_wrap_;
-    float       over_;
+    double      k_;
+    double      k_0_;
+    double      lat_0_;
+    double      lon_0_;
+    double      lon_wrap_;
+    double      over_;
     const char* pm_;
     const char* proj_;
     const char* units_;
     const char* vunits_;
-    float       x_0_;
-    float       y_0_;
+    double      x_0_;
+    double      y_0_;
     const char* datum_;
     const char* geo_id_grids_;
-    float       zone_;
+    double      zone_;
     int         towgs84_;
     const char* original_georef_str_;
 } RM_GeoReference;
@@ -130,7 +133,7 @@ typedef struct
 // Modes for interpret Z, Head, Pitch, Roll coordinate value as absolute or relative
 // grouped as bitmask: 0000 => skip/use current, 0001=DEFAULT, 0011=ABS, 0111=REL
 // example: Relative Z, Absolute H, Default R, Current P = RM_Z_REL | RM_H_ABS | RM_R_DEF = 4151 = 0001 0000 0011 0111
-// Must match roadmanager::Position::PositionMode
+// Must match roadmanager::Position::PosMode
 typedef enum
 {
     RM_Z_SET     = 1,  // 0001
@@ -160,7 +163,19 @@ extern "C"
 {
 #endif
 
+    /**
+    Initialize the RoadManager library with specified OpenDRIVE file
+    @param odrFilename Path to OpenDRIVE file
+    @return 0 on success, -1 on failure
+    */
     RM_DLL_API int RM_Init(const char* odrFilename);
+
+    /**
+    Initialize the RoadManager library with specified OpenDRIVE XML string
+    @param odrAsXMLString xml content
+    @return 0 on success, -1 on failure
+    */
+    RM_DLL_API int RM_InitWithString(const char* odrAsXMLString);
 
     RM_DLL_API int RM_Close();
 
@@ -205,10 +220,10 @@ extern "C"
     when position is affected by API calls, e.g. updateObjectWorldPos(). Update operations represents when the
     position is updated implicitly by the scenarioengine, e.g. default controller moving a vehicle along the lane.
     @param hande Handle to the position object
-    @param mode Bitmask combining values from roadmanager::PosMode enum
+    @param mode Bitmask combining values from roadmanager::Position::PosMode enum
     example: To set relative z and absolute roll: (Z_REL | R_ABS) or (7 | 12288) = (7 + 12288) = 12295
     @param type Type of operations the setting applies to. SET (explicit set-functions) or UPDATE (updates by controllers),
-    according to roadmanager::PosModeType
+    according to roadmanager::Position::PosModeType
     */
     RM_DLL_API void RM_SetObjectPositionMode(int handle, int type, int mode);
 
@@ -216,7 +231,7 @@ extern "C"
     Set to default mode how position object will align to the road
     @param hande Handle to the position object
     @param type Type of operations the setting applies to. SET (explicit set-functions) or UPDATE (updates by controllers),
-    according to roadmanager::PosModeType
+    according to roadmanager::Position::PosModeType
     */
     RM_DLL_API void RM_SetObjectPositionModeDefault(int handle, int type);
 
@@ -224,7 +239,7 @@ extern "C"
     Specify which lane types the position object snaps to (is aware of)
     @param handle Handle to the position object
     @param laneTypes A combination (bitmask) of lane types according to roadmanager::Lane::LaneType
-    examples: ANY_DRIVING = 1966082, ANY_ROAD = 1966214, ANY = -1
+    examples: ANY_DRIVING = 6160898, ANY_ROAD = 6161294, ANY = -1
     @return 0 if successful, -1 if not
     */
     RM_DLL_API int RM_SetSnapLaneTypes(int handle, int laneTypes);
@@ -263,7 +278,7 @@ extern "C"
     @param id The road ID
     @return The length of the road if ID exists, else 0.0
     */
-    RM_DLL_API float RM_GetRoadLength(id_t id);
+    RM_DLL_API double RM_GetRoadLength(id_t id);
 
     /**
     Get original string ID associated with specified road
@@ -294,12 +309,41 @@ extern "C"
     RM_DLL_API id_t RM_GetJunctionIdFromString(const char* junction_id_str);
 
     /**
-    Get the number of drivable lanes of specified road
+    Get the number of lanes of given type for given road. Reference lane will be included if matching the type.
     @param roadId The road ID
     @param s The distance along the road at what point to check number of lanes (which can vary along the road)
-    @return The number of drivable lanes, -1 indicates error e.g. no roadnetwork loaded
+    @param type The lane type according to roadmanager::Lane::LaneType (e.g. -1 = any, 1966594 = any drivable)
+    @return The number of matched lanes, -1 indicates error, e.g. no roadnetwork loaded
     */
-    RM_DLL_API int RM_GetRoadNumberOfLanes(id_t roadId, float s);
+    RM_DLL_API int RM_GetRoadNumberOfLanes(id_t roadId, double s, int type_mask);
+
+    /**
+    Get ID of the lane given by index and type. Reference lane will be included if matching the type.
+    @param roadId The road ID
+    @param laneIndex The index of the lane
+    @param s The distance along the road at what point to look up the lane ID
+    @param lane_id Pointer to store the lane ID
+    @return 0 on success, -1 indicates error e.g. no roadnetwork loaded or index out of range
+    */
+    RM_DLL_API int RM_GetLaneIdByIndex(id_t roadId, int laneIndex, double s, int type_mask, int* lane_id);
+
+    /**
+    Get the number of drivable lanes of given road (like RM_GetRoadNumberOfLanes with type_mask for any drivable)
+    @param roadId The road ID
+    @param s The distance along the road at what point to check number of lanes (which can vary along the road)
+    @return The number of lanes, -1 indicates error, e.g. no roadnetwork loaded
+    */
+    RM_DLL_API int RM_GetRoadNumberOfDrivableLanes(id_t roadId, double s);
+
+    /**
+    Get ID of the drivable lane given by index (like RM_GetLaneIdByIndex with type_mask for any drivable)
+    @param roadId The road ID
+    @param laneIndex The index of the lane
+    @param s The distance along the road at what point to look up the lane ID
+    @param lane_id Pointer to store the lane ID
+    @return 0 on success, -1 indicates error e.g. no roadnetwork loaded or index out of range
+    */
+    RM_DLL_API int RM_GetDrivableLaneIdByIndex(id_t roadId, int laneIndex, double s, int* lane_id);
 
     /**
     Get the number of roads overlapping the given position
@@ -317,15 +361,6 @@ extern "C"
     RM_DLL_API id_t RM_GetOverlappingRoadId(int handle, unsigned int index);
 
     /**
-    Get the ID of the lane given by index
-    @param roadId The road ID
-    @param laneIndex The index of the lane
-    @param s The distance along the road at what point to look up the lane ID
-    @return The lane ID, -1 indicates error e.g. no roadnetwork loaded
-    */
-    RM_DLL_API int RM_GetLaneIdByIndex(id_t roadId, int laneIndex, float s);
-
-    /**
     Set position from road coordinates, world coordinates being calculated
     @param handle Handle to the position object
     @param roadId Road specifier
@@ -333,17 +368,28 @@ extern "C"
     @param laneOffset Offset from lane center
     @param s Distance along the specified road
     @param align If true the heading will be reset to the lane driving direction (typically only at initialization)
-    @return >= 0 on success. For all codes see roadmanager.hpp::Position::enum class ReturnCode
+    @return >= 0 on success. For all codes see roadmanager::Position::ReturnCode
     */
-    RM_DLL_API int RM_SetLanePosition(int handle, id_t roadId, int laneId, float laneOffset, float s, bool align);
+    RM_DLL_API int RM_SetLanePosition(int handle, id_t roadId, int laneId, double laneOffset, double s, bool align);
+
+    /**
+    Set position from road coordinates, world coordinates being calculated
+    @param handle Handle to the position object
+    @param roadId Road specifier
+    @param s Distance along the specified road
+    @param t Lateral position in the road s/t coordinate system
+    @param align If true the heading will be reset to the lane driving direction (typically only at initialization)
+    @return >= 0 on success. For all codes see roadmanager::Position::ReturnCode
+    */
+    RM_DLL_API int RM_SetRoadPosition(int handle, id_t roadId, double s, double t, bool align);
 
     /**
     Set s (distance) part of a lane position, world coordinates being calculated
     @param handle Handle to the position object
     @param s Distance along the specified road
-    @return >= 0 on success. For all codes see roadmanager.hpp::Position::enum class ReturnCode
+    @return >= 0 on success. For all codes see roadmanager::Position::ReturnCode
     */
-    RM_DLL_API int RM_SetS(int handle, float s);
+    RM_DLL_API int RM_SetS(int handle, double s);
 
     /**
     Set position from world coordinates, road coordinates being calculated
@@ -355,9 +401,9 @@ extern "C"
     @param h rotation heading value
     @param p rotation pitch value
     @param r rotation roll value
-    @return >= 0 on success. For all codes see roadmanager.hpp::Position::enum class ReturnCode
+    @return >= 0 on success. For all codes see roadmanager::Position::ReturnCode
     */
-    RM_DLL_API int RM_SetWorldPosition(int handle, float x, float y, float z, float h, float p, float r);
+    RM_DLL_API int RM_SetWorldPosition(int handle, double x, double y, double z, double h, double p, double r);
 
     /**
     Set position from world X, Y and heading coordinates; Z, pitch and road coordinates being calculated
@@ -366,9 +412,9 @@ extern "C"
     @param x cartesian coordinate x value
     @param y cartesian coordinate y value
     @param h rotation heading value
-    @return >= 0 on success. For all codes see roadmanager.hpp::Position::enum class ReturnCode
+    @return >= 0 on success. For all codes see roadmanager::Position::ReturnCode
     */
-    RM_DLL_API int RM_SetWorldXYHPosition(int handle, float x, float y, float h);
+    RM_DLL_API int RM_SetWorldXYHPosition(int handle, double x, double y, double h);
 
     /**
     Set position from world X, Y, Z and heading coordinates; pitch and road coordinates being calculated
@@ -378,9 +424,9 @@ extern "C"
     @param x cartesian coordinate x value
     @param y cartesian coordinate y value
     @param h rotation heading value
-    @return >= 0 on success. For all codes see roadmanager.hpp::Position::enum class ReturnCode
+    @return >= 0 on success. For all codes see roadmanager::Position::ReturnCode
     */
-    RM_DLL_API int RM_SetWorldXYZHPosition(int handle, float x, float y, float z, float h);
+    RM_DLL_API int RM_SetWorldXYZHPosition(int handle, double x, double y, double z, double h);
 
     /**
     Set position from world X, Y, Z and heading coordinates; pitch and road coordinates being calculated
@@ -394,32 +440,32 @@ extern "C"
     @param p rotation pitch value
     @param r rotation roll value
     @param mode Bitmask specifying whether z, h, p, and r is absolute or relative road. See RM_PositionMode
-    @return >= 0 on success. For all codes see roadmanager.hpp::Position::enum class ReturnCode
+    @return >= 0 on success. For all codes see roadmanager::Position::ReturnCode
     */
-    RM_DLL_API int RM_SetWorldPositionMode(int handle, float x, float y, float z, float h, float p, float r, int mode);
+    RM_DLL_API int RM_SetWorldPositionMode(int handle, double x, double y, double z, double h, double p, double r, int mode);
 
     /**
     Set heading (yaw), mode (relative/absolute) given by current setting for the object
     @param handle Handle to the position object
     @param h Heading
-    @return >= 0 on success. For all codes see roadmanager.hpp::Position::enum class ReturnCode
+    @return >= 0 on success. For all codes see roadmanager::Position::ReturnCode
     */
-    RM_DLL_API int RM_SetH(int handle, float h);
+    RM_DLL_API int RM_SetH(int handle, double h);
 
     /**
     Set heading (yaw), mode (relative/absolute) given by argument
     @param handle Handle to the position object
     @param h Heading
     @param mode RM_H_ABS or RM_H_REL, see RM_PositionMode
-    @return >= 0 on success. For all codes see roadmanager.hpp::Position::enum class ReturnCode
+    @return >= 0 on success. For all codes see roadmanager::Position::ReturnCode
     */
-    RM_DLL_API int RM_SetHMode(int handle, float h, int mode);
+    RM_DLL_API int RM_SetHMode(int handle, double h, int mode);
 
     /**
     Change road belonging of position object, keeping actual x,y location, regardless other roads being closer
     @param handle Handle to the position object
     @param roadId Id of the road to belong to
-    @return >= 0 on success. For all codes see roadmanager.hpp::Position::enum class ReturnCode
+    @return >= 0 on success. For all codes see roadmanager::Position::ReturnCode
     */
     RM_DLL_API int RM_SetRoadId(int handle, id_t roadId);
 
@@ -427,16 +473,16 @@ extern "C"
     Move position forward along the road. Choose way randomly though any junctions.
     @param handle Handle to the position object
     @param dist Distance (meter) to move
-    @param junctionSelectorAngle Desired direction [0:2pi] from incoming road direction (angle = 0), set -1 to randomize
-    @return >= 0 on success. For all codes see roadmanager.hpp::Position::enum class ReturnCode
+    @param junctionSelectorAngle Target direction from incoming road (angle = 0), e.g. pi/2=right pi=straight 3pi/2=left -1=randomize
+    @return >= 0 on success. For all codes see roadmanager::Position::ReturnCode
     */
-    RM_DLL_API int RM_PositionMoveForward(int handle, float dist, float junctionSelectorAngle);
+    RM_DLL_API int RM_PositionMoveForward(int handle, double dist, double junctionSelectorAngle);
 
     /**
     Get the fields of the position of specified index
     @param handle Handle to the position object
     @param data Struct to fill in the values
-    @return 0 if successful, -1 if not
+    @return >=0 if successful, <0 if not. For detailed status see Position::ReturnCode.
     */
     RM_DLL_API int RM_GetPositionData(int handle, RM_PositionData* data);
 
@@ -445,7 +491,7 @@ extern "C"
     @param handle Handle to the position object
     @return 0 if successful, -1 if not
     */
-    RM_DLL_API float RM_GetSpeedLimit(int handle);
+    RM_DLL_API double RM_GetSpeedLimit(int handle);
 
     /**
     Retrieve lane information from the position object (at current road, s-value and lane)
@@ -455,9 +501,9 @@ extern "C"
     @param lookAheadMode Measurement strategy: Along reference lane, lane center or current lane offset. See roadmanager::Position::LookAheadMode enum
     @param inRoadDrivingDirection If true always look along primary driving direction. If false, look in most straightforward direction according to
     object heading.
-    @return 0 if successful, -1 if not
+    @return >=0 if successful, <0 if not. For detailed status see Position::ReturnCode.
     */
-    RM_DLL_API int RM_GetLaneInfo(int handle, float lookahead_distance, RM_RoadLaneInfo* data, int lookAheadMode, bool inRoadDrivingDirection);
+    RM_DLL_API int RM_GetLaneInfo(int handle, double lookahead_distance, RM_RoadLaneInfo* data, int lookAheadMode, bool inRoadDrivingDirection);
 
     /**
     As RM_GetLaneInfo plus relative location of point of interest (probe) from current position
@@ -467,26 +513,28 @@ extern "C"
     @param lookAheadMode Measurement strategy: Along reference lane, lane center or current lane offset. See roadmanager::Position::LookAheadMode enum
     @param inRoadDrivingDirection If true always look along primary driving direction. If false, look in most straightforward direction according to
     object heading.
-    @return 0 if successful, 1 if probe reached end of road, 2 if end ouf route, -1 if some error
+    @return >=0 if successful, <0 if not. For detailed status see Position::ReturnCode.
     */
-    RM_DLL_API int RM_GetProbeInfo(int handle, float lookahead_distance, RM_RoadProbeInfo* data, int lookAheadMode, bool inRoadDrivingDirection);
+    RM_DLL_API int RM_GetProbeInfo(int handle, double lookahead_distance, RM_RoadProbeInfo* data, int lookAheadMode, bool inRoadDrivingDirection);
 
     /**
     Get width of lane with specified lane id, at current longitudinal position
     @param handle Handle to the position object from which to measure
     @param lane_id Id of the lane to measure
-    @return Lane width or 0.0 if lane does not exists or any other error
+    @param Pointer to store the lane width
+    @return 0 on success, -1 on any error, e.g. lane with specified id is missing
     */
-    RM_DLL_API float RM_GetLaneWidth(int handle, int lane_id);
+    RM_DLL_API int RM_GetLaneWidth(int handle, int lane_id, double* width);
 
     /**
     Get width of lane with specified lane id, at specified road and longitudinal position
     @param road_id Id of the road
     @param lane_id Id of the lane to measure
     @param s Longitudinal position along the road
-    @return Lane width or 0.0 if lane does not exists or any other error
+    @param width Pointer to store the lane width
+    @return 0 on success, -1 on any error, e.g. specified road is missing
     */
-    RM_DLL_API float RM_GetLaneWidthByRoadId(id_t road_id, int lane_id, float s);
+    RM_DLL_API int RM_GetLaneWidthByRoadId(id_t road_id, int lane_id, double s, double* width);
 
     /**
     Get type of lane with specified lane id, at current longitudinal position
@@ -502,7 +550,7 @@ extern "C"
     Can be used for checking exact lane type or combinations by bitmask.
     Example 1: Check if on border lane: SE_GetObjectLaneType(id) == (1 << 6)
     Example 2: Check if on any drivable lane: SE_GetObjectLaneType(id) & 1966594
-    Example 3: Check if on any road lane: SE_GetObjectLaneType(id) & 1966726
+    Example 3: Check if on any road lane: SE_GetObjectLaneType(id) & 1966990
     Example 4: Check for no lane (outside defined lanes): SE_GetObjectLaneType(id) == 1
     @param handle Handle to the position object to check
     @return lane type according to enum roadmanager::Lane::LaneType
@@ -511,13 +559,13 @@ extern "C"
 
     /**
     Get type of lane with specified lane id, at specified road and longitudinal position
-    For valid types, see RoadManager.hpp::Lane::LaneType enum
+    For valid types, see RoadManager::Lane::LaneType enum
     @param road_id Id of the road
     @param lane_id Id of the lane
     @param s Longitudinal position along the road
     @return Lane type or 0 if lane does not exists or any other error
     */
-    RM_DLL_API int RM_GetLaneTypeByRoadId(id_t road_id, int lane_id, float s);
+    RM_DLL_API int RM_GetLaneTypeByRoadId(id_t road_id, int lane_id, double s);
 
     /**
     Find out the difference between two position objects, i.e. delta distance (long and lat) and delta laneId
@@ -536,29 +584,29 @@ extern "C"
     RM_DLL_API int RM_GetNumberOfRoadSigns(id_t road_id);
 
     /**
-            Get information on specifed road sign
-            @param road_id The road of which to look for the sign
-            @param index Index of the sign. Note: not ID
-            @param road_sign Pointer/reference to a SE_RoadSign struct to be filled in
-            @return 0 if successful, -1 if not
+    Get information on specifed road sign
+    @param road_id The road of which to look for the sign
+    @param index Index of the sign. Note: not ID
+    @param road_sign Pointer/reference to a SE_RoadSign struct to be filled in
+    @return 0 if successful, -1 if not
     */
     RM_DLL_API int RM_GetRoadSign(id_t road_id, unsigned int index, RM_RoadSign* road_sign);
 
     /**
-            Get the number of lane validity records of specified road object/sign
-            @param road_id The road of which to look for the sign
-            @param index Index of the sign. Note: not ID
-            @return Number of validity records of specified road sign, -1 if not
+    Get the number of lane validity records of specified road object/sign
+    @param road_id The road of which to look for the sign
+    @param index Index of the sign. Note: not ID
+    @return Number of validity records of specified road sign, -1 if not
     */
     RM_DLL_API int RM_GetNumberOfRoadSignValidityRecords(id_t road_id, unsigned int index);
 
     /**
-            Get specified validity record of specifed road sign
-            @param road_id The road of which to look for the sign
-            @param signIndex Index of the sign. Note: not ID
-            @param validityIndex Index of the validity record
-            @param road_sign Pointer/reference to a SE_RoadObjValidity struct to be filled in
-            @return 0 if successful, -1 if not
+    Get specified validity record of specifed road sign
+    @param road_id The road of which to look for the sign
+    @param signIndex Index of the sign. Note: not ID
+    @param validityIndex Index of the validity record
+    @param road_sign Pointer/reference to a SE_RoadObjValidity struct to be filled in
+    @return 0 if successful, -1 if not
     */
     RM_DLL_API int RM_GetRoadSignValidityRecord(id_t road_id, unsigned int signIndex, unsigned int validityIndex, RM_RoadObjValidity* validity);
 
