@@ -30,7 +30,11 @@ public class ue_esmini_featureRuntime : ModuleRules
         }
         else if (Target.Platform == UnrealTargetPlatform.Linux)
         {
-            PublicAdditionalLibraries.Add(Path.Combine(esminiLibPath, "esminiLib.a"));
+            PublicAdditionalLibraries.Add(Path.Combine(esminiLibPath, "libesminiLib.so"));
+            RuntimeDependencies.Add(
+                Path.Combine("$(PluginDir)", "Binaries", "Linux", "libesminiLib.so"),
+                Path.Combine(esminiLibPath, "libesminiLib.so"),
+                StagedFileType.NonUFS);
         }
         PublicIncludePaths.AddRange(
 			new string[] {
