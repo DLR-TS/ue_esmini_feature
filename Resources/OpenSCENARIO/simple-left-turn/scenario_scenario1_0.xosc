@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OpenScenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema.xml">
+  <FileHeader author="TSC2OpenX" date="2025-07-11T21:09:50.740201300" description="scenario_scenario1_0" revMajor="1" revMinor="0"/>
+  <CatalogLocations>
+    <VehicleCatalog>
+      <Directory path="Vehicles"/>
+    </VehicleCatalog>
+  </CatalogLocations>
+  <RoadNetwork>
+    <LogicFile filepath="./drive_scenario1_0.xodr"/>
+    <SceneGraphFile filepath=""/>
+  </RoadNetwork>
+  <Entities>
+    <ScenarioObject name="ego">
+      <CatalogReference catalogName="VehicleCatalog" entryName="car_white"/>
+    </ScenarioObject>
+    <ScenarioObject name="other">
+      <CatalogReference catalogName="VehicleCatalog" entryName="car_blue"/>
+    </ScenarioObject>
+  </Entities>
+  <Storyboard>
+    <Init>
+      <Actions>
+        <GlobalAction>
+          <EnvironmentAction>
+            <Environment name="environment1">
+              <TimeOfDay animation="true" dateTime="2022-01-01T12:00:00"/>
+              <Weather cloudState="free">
+                <Sun azimuth="0.0" elevation="1.31" intensity="0.85"/>
+                <Fog visualRange="100.0"/>
+                <Precipitation intensity="1.0" precipitationType="dry"/>
+              </Weather>
+              <RoadCondition frictionScaleFactor="1.0"/>
+            </Environment>
+          </EnvironmentAction>
+        </GlobalAction>
+        <Private entityRef="ego">
+          <PrivateAction>
+            <TeleportAction>
+              <Position>
+                <WorldPosition h="0.0" x="-28.69130840638757" y="-0.6322936550008822"/>
+              </Position>
+            </TeleportAction>
+          </PrivateAction>
+        </Private>
+        <Private entityRef="other">
+          <PrivateAction>
+            <TeleportAction>
+              <Position>
+                <WorldPosition h="3.141592653589793" x="23.90625475138668" y="4.081066"/>
+              </Position>
+            </TeleportAction>
+          </PrivateAction>
+        </Private>
+      </Actions>
+    </Init>
+    <Story name="overtake">
+      <Act name="overtakeAct">
+        <ManeuverGroup maximumExecutionCount="1" name="trajectoryEgo">
+          <Actors selectTriggeringEntities="false">
+            <EntityRef entityRef="ego"/>
+          </Actors>
+          <Maneuver name="followTrajectoryManeuver">
+            <Event maximumExecutionCount="1" name="followTrajectoryManeuverEvent0" priority="parallel">
+              <Action name="followTrajectoryManeuverAction0">
+                <PrivateAction>
+                  <RoutingAction>
+                    <FollowTrajectoryAction>
+                      <Trajectory closed="true" name="egoFollowTrajectory">
+                        <Shape>
+                          <Nurbs order="3">
+                            <ControlPoint time="0.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-28.69130840638757" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="0.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-28.663835233888015" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="1.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-21.71939078944356" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="1.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-14.774946344999123" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="2.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-14.74747317249956" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="2.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-14.720000000000004" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="3.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-14.69252682750044" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="3.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-14.665053655000882" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="4.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-10.76698059055291" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="4.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-6.868907526104936" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="5.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-6.841434353605377" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="5.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-6.813961181105817" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="6.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-4.794324058328923" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="6.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-2.7746869355520274" y="-0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="7.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-1.387343467776013" y="0.0"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="7.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="0.0" y="0.6322936550008822"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="8.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="0.0" y="2.651930777777778"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="8.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="0.0" y="4.671567900554674"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="9.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="0.0" y="11.61601234499912"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="9.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="0.0" y="18.560456789443563"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="10.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="0.0" y="18.58792996194312"/>
+                              </Position>
+                            </ControlPoint>
+                            <Knot value="0.0"/>
+                            <Knot value="0.0"/>
+                            <Knot value="0.0"/>
+                            <Knot value="1.0"/>
+                            <Knot value="1.0"/>
+                            <Knot value="2.0"/>
+                            <Knot value="2.0"/>
+                            <Knot value="3.0"/>
+                            <Knot value="3.0"/>
+                            <Knot value="4.0"/>
+                            <Knot value="4.0"/>
+                            <Knot value="5.0"/>
+                            <Knot value="5.0"/>
+                            <Knot value="6.0"/>
+                            <Knot value="6.0"/>
+                            <Knot value="7.0"/>
+                            <Knot value="7.0"/>
+                            <Knot value="8.0"/>
+                            <Knot value="8.0"/>
+                            <Knot value="9.0"/>
+                            <Knot value="9.0"/>
+                            <Knot value="10.0"/>
+                            <Knot value="10.0"/>
+                            <Knot value="10.0"/>
+                          </Nurbs>
+                        </Shape>
+                      </Trajectory>
+                      <TimeReference>
+                        <Timing domainAbsoluteRelative="absolute" offset="0" scale="1"/>
+                      </TimeReference>
+                      <TrajectoryFollowingMode followingMode="position"/>
+                    </FollowTrajectoryAction>
+                  </RoutingAction>
+                </PrivateAction>
+              </Action>
+              <StartTrigger>
+                <ConditionGroup>
+                  <Condition conditionEdge="none" delay="0" name="followTrajectoryManeuverStartCondition">
+                    <ByValueCondition>
+                      <SimulationTimeCondition rule="greaterThan" value="0.0"/>
+                    </ByValueCondition>
+                  </Condition>
+                </ConditionGroup>
+              </StartTrigger>
+            </Event>
+          </Maneuver>
+        </ManeuverGroup>
+        <ManeuverGroup maximumExecutionCount="1" name="trajectoryOther">
+          <Actors selectTriggeringEntities="false">
+            <EntityRef entityRef="other"/>
+          </Actors>
+          <Maneuver name="followTrajectoryManeuver">
+            <Event maximumExecutionCount="1" name="followTrajectoryManeuverEvent0" priority="parallel">
+              <Action name="followTrajectoryManeuverAction0">
+                <PrivateAction>
+                  <RoutingAction>
+                    <FollowTrajectoryAction>
+                      <Trajectory closed="true" name="otherFollowTrajectory">
+                        <Shape>
+                          <Nurbs order="3">
+                            <ControlPoint time="0.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="23.90625475138668" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="0.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="23.87878157888713" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="1.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="16.93433713444268" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="1.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="9.989892689998237" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="2.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="9.962419517498677" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="2.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="9.934946344999116" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="3.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="9.907473172499559" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="3.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="9.880000000000003" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="4.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="9.85252682750044" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="4.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="9.825053655000882" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="5.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="9.797580482501322" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="5.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="9.770107310001764" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="6.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="5.655761513195547" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="6.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="1.5414157163893303" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="7.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-5.403028728055114" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="7.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-12.347473172499562" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="8.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-12.37494634499912" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="8.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-12.40241951749868" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="9.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-19.34686396194312" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="9.5" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-26.29130840638757" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <ControlPoint time="10.0" weight="1.0">
+                              <Position>
+                                <WorldPosition x="-26.31878157888712" y="4.081066"/>
+                              </Position>
+                            </ControlPoint>
+                            <Knot value="0.0"/>
+                            <Knot value="0.0"/>
+                            <Knot value="0.0"/>
+                            <Knot value="1.0"/>
+                            <Knot value="1.0"/>
+                            <Knot value="2.0"/>
+                            <Knot value="2.0"/>
+                            <Knot value="3.0"/>
+                            <Knot value="3.0"/>
+                            <Knot value="4.0"/>
+                            <Knot value="4.0"/>
+                            <Knot value="5.0"/>
+                            <Knot value="5.0"/>
+                            <Knot value="6.0"/>
+                            <Knot value="6.0"/>
+                            <Knot value="7.0"/>
+                            <Knot value="7.0"/>
+                            <Knot value="8.0"/>
+                            <Knot value="8.0"/>
+                            <Knot value="9.0"/>
+                            <Knot value="9.0"/>
+                            <Knot value="10.0"/>
+                            <Knot value="10.0"/>
+                            <Knot value="10.0"/>
+                          </Nurbs>
+                        </Shape>
+                      </Trajectory>
+                      <TimeReference>
+                        <Timing domainAbsoluteRelative="absolute" offset="0" scale="1"/>
+                      </TimeReference>
+                      <TrajectoryFollowingMode followingMode="position"/>
+                    </FollowTrajectoryAction>
+                  </RoutingAction>
+                </PrivateAction>
+              </Action>
+              <StartTrigger>
+                <ConditionGroup>
+                  <Condition conditionEdge="none" delay="0" name="followTrajectoryManeuverStartCondition">
+                    <ByValueCondition>
+                      <SimulationTimeCondition rule="greaterThan" value="0.0"/>
+                    </ByValueCondition>
+                  </Condition>
+                </ConditionGroup>
+              </StartTrigger>
+            </Event>
+          </Maneuver>
+        </ManeuverGroup>
+        <StartTrigger>
+          <ConditionGroup>
+            <Condition conditionEdge="risingOrFalling" delay="0.0" name="overtakeStartTrigger">
+              <ByValueCondition>
+                <SimulationTimeCondition rule="greaterThan" value="0.0"/>
+              </ByValueCondition>
+            </Condition>
+          </ConditionGroup>
+        </StartTrigger>
+      </Act>
+    </Story>
+    <StopTrigger>
+      <ConditionGroup>
+        <Condition conditionEdge="risingOrFalling" delay="0.0" name="StopCondition">
+          <ByValueCondition>
+            <SimulationTimeCondition rule="greaterThan" value="10.0"/>
+          </ByValueCondition>
+        </Condition>
+      </ConditionGroup>
+    </StopTrigger>
+  </Storyboard>
+</OpenScenario>

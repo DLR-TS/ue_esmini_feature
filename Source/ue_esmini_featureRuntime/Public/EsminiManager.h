@@ -1,14 +1,24 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*
+ * Copyright (c) 2026 DLR e.V.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 
 #pragma once
 #include "esminiLib.hpp"
-
-#include "GEMSTARRoot.h"
+#include "EsminiLog.h"
+#include "Subsystems/GemstarSimulationSubsystem.h"
 #include "Interfaces/IPluginManager.h"
 #include "Misc/Paths.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "VehicleDataDispatcher.h"
+#include "Interfaces/Movement/VehicleDataDispatcher.h"
+#include "Interfaces/Movement/VRUDataUpdate.h"
+#include "Interfaces/Weather/WeatherDataUpdate.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 #include "EsminiManager.generated.h"
@@ -118,11 +128,13 @@ UCLASS()
 class UE_ESMINI_FEATURERUNTIME_API AEsminiManager : public AActor,
 	public IVehicleDataDispatcher,
 	public IVehicleDataUpdate,
-	public IGEMSTARManager
+	public IVRUDataUpdate,
+	public IWeatherDataUpdate,
+	public IGemstarManager
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AEsminiManager();
 
@@ -138,26 +150,23 @@ protected:
 
 	virtual void VehicleDataUpdate_Implementation(FVehicleDataUpdateData& data) override;
 
-	virtual bool RegisterDataflow_Implementation(AActor* consumer, FString& producer, GEMSTARInterfaceType interfaceName) override;
-
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Configure(TMap<FString, FInnerConfig> Configurations, AGEMSTARRoot* Root);
+	void Configure(TMap<FString, FInnerConfig> Configurations, UGemstarSimulationSubsystem* Root);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "esmini")
-
 	bool bUseBPConfiguration = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "esmini")
-	FString Path = "Resources/simple-left-turn/scenario_scenario1_0.xosc";
+	FString Path = "simple-left-turn/scenario_scenario1_0.xosc";
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "esmini")
-	FString ExampleParameter1 = "Resources/simple-left-turn/scenario_scenario1_0.xosc";
+	FString ExampleParameter1 = "simple-left-turn/scenario_scenario1_0.xosc";
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "esmini")
-	FString ExampleParameter2 = "Resources/cut-in/cut-in.xosc";
+	FString ExampleParameter2 = "cut-in/cut-in.xosc";
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "esmini")
 	EEsminiMode Mode;
@@ -169,18 +178,29 @@ public:
 	TMap<FString, FTransform> transforms;
 
 	UFUNCTION(BlueprintCallable, Category = "esmini")
-	void LoadScenario(FString oscFile);
+	void LoadScenario();
 
-	UFUNCTION(BlueprintCallable, Category = "esmini")
-	void SendTestMessage();
 	UPROPERTY(EditAnywhere, Category = "esmini")
 	FTransform CoordinateSystemOffset;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "esmini")
 	bool bDebug = false;
 
-	FName PROVIDER_NAME{ "esmini" };
-	TArray<AActor*> ActorsToInform;
-	FTransform TranslateToUnrealWorldPosition(const FScenarioObjectState& obj);
 private:
-	AGEMSTARRoot* GemstarRoot;
+	FName PROVIDER_NAME{ "ue_esmini_feature" };
+
+	TArray<FDataTarget> VehicleActorsToInform;
+	TArray<FDataTarget> VRUActorsToInform;
+	TArray<FDataTarget> WeatherEffectActorsToInform;
+
+	FString GetOpenSCENARIORootDirectory();
+
+	void SendObjectUpdates();
+	void SendWeatherUpdate();
+
+
+	FTransform TranslateToUnrealWorldPosition(const FScenarioObjectState& obj);
+protected:
+	UPROPERTY()
+	TObjectPtr<UGemstarSimulationSubsystem> GemstarSimulationSubsystem;
+	friend class AEsminiTester;
 };

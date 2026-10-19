@@ -1,4 +1,12 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+/*
+ * Copyright (c) 2026 DLR e.V.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 
 #include "ue_esmini_featureRuntimeModule.h"
 
@@ -6,7 +14,6 @@
 
 void FesminiRuntimeModule::StartupModule()
 {
-	int i{ 666 };
 	// This code will execute after your module is loaded into memory;
 	// the exact timing is specified in the .uplugin file per-module
 }
@@ -19,4 +26,4 @@ void FesminiRuntimeModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FesminiRuntimeModule, esminiRuntime)
+IMPLEMENT_MODULE(FesminiRuntimeModule, ue_esmini_featureRuntime)

@@ -1,15 +1,28 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*
+ * Copyright (c) 2026 DLR e.V.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Subsystems/GemstarSimulationSubsystem.h"
+#include "GemstarManager.h"
 #include "EsminiManager.h"
 #include "GameFramework/Actor.h"
-#include "VehicleDataUpdate.h"
+#include "Interfaces/Movement/VehicleDataUpdate.h"
+#include "Interfaces/Movement/VRUDataUpdate.h"
+#include "Interfaces/Weather/WeatherDataUpdate.h"
+
 #include "EsminiTester.generated.h"
 
 UCLASS()
-class AEsminiTester : public AActor, public IVehicleDataUpdate
+class AEsminiTester : public AActor, public IVehicleDataUpdate, public IVRUDataUpdate, public IWeatherDataUpdate, public IGemstarManager
 {
 	GENERATED_BODY()
 	
@@ -26,8 +39,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, Category = "GEMSTAR")
-	AEsminiManager* esminiManager;
+	TObjectPtr<AEsminiManager> EsminiManager;
 
 protected:
 	virtual void VehicleDataUpdate_Implementation(FVehicleDataUpdateData& data) override;
+	virtual void VRUDataUpdate_Implementation(FVRUDataUpdateData& data) override;
+	virtual void WeatherDataUpdate_Implementation(FWeatherData& data, int32 targetIndex) override;
+
+private:
+	bool bRegistered = false;
+	
 };

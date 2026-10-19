@@ -1,7 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*
+ * Copyright (c) 2026 DLR e.V.
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 
 
 #include "EsminiTester.h"
+
+#include "EngineUtils.h"
 
 // Sets default values
 AEsminiTester::AEsminiTester()
@@ -15,39 +25,74 @@ AEsminiTester::AEsminiTester()
 void AEsminiTester::BeginPlay()
 {
 	Super::BeginPlay();
-	if (esminiManager == nullptr) {
-		UE_LOG(LogTemp, Log, TEXT("No esmini Actor defined. Test failed."));
-	}
-	else {
-		IVehicleDataDispatcher::Execute_RegisterVehicleDataReceiver(esminiManager, this);
-	}
-	TMap<FString, FInnerConfig> config;
-	FInnerConfig inner;
-	inner.Entries.Add("Path", "Resources/cut-in/cut-in.xosc");
-	config.Add("esmini", inner);
-	esminiManager->Configure(config, nullptr);
 }
 
 // Called every frame
 void AEsminiTester::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (esminiManager == nullptr) {
-		UE_LOG(LogTemp, Log, TEXT("No SUMO Actor defined. Test failed."));
+
+	if (bRegistered) {
+		return;
 	}
+
+	if (!IsValid(EsminiManager)) {
+		
+		for (TActorIterator<AEsminiManager> It(GetWorld()); It; ++It) {
+			EsminiManager = *It;
+			break;
+		}
+	}
+	
+	if (!IsValid(EsminiManager)) {
+		return;
+	}
+	
+	const FString Inputs = "[ue_esmini_feature]";
+	FDataTarget Dt;
+	Dt.Actor = this;
+	ConnectInputs(&Inputs, EsminiManager->GemstarSimulationSubsystem, Dt, GemstarInterfaceType::VRUUPDATE);
+	ConnectInputs(&Inputs, EsminiManager->GemstarSimulationSubsystem, Dt, GemstarInterfaceType::WEATHERDATA);
+	ConnectInputs(&Inputs, EsminiManager->GemstarSimulationSubsystem, Dt, GemstarInterfaceType::TRAFFICUPDATE);
+
+	bRegistered = true;
+
+	UE_LOG(Esmini, Log, TEXT("Esmini Tester: observing %s"), *EsminiManager->GetName());
 }
 
-void AEsminiTester::VehicleDataUpdate_Implementation(FVehicleDataUpdateData& data) {
-	UE_LOG(LogTemp, Log,
+void AEsminiTester::VehicleDataUpdate_Implementation(FVehicleDataUpdateData& Data) {
+	UE_LOG(Esmini, Log,
 		TEXT("VehicleDataUpdateData { Provider: %s, Name: %s, Position: %s, Speed: %.2f, Accel: %.2f, Signals: %d, VehicleClass: %s, BoundingBox: %s }"),
-		*data.Provider.ToString(),
-		*data.Name.ToString(),
-		*data.Position.ToString(),
-		data.speed,
-		data.accel,
-		data.signals,
-		*data.VehicleClass.ToString(),
-		*data.BoundingBox.ToString()
+		*Data.Provider.ToString(),
+		*Data.Name.ToString(),
+		*Data.Position.ToString(),
+		Data.speed,
+		Data.accel,
+		Data.signals,
+		*Data.VehicleClass.ToString(),
+		*Data.BoundingBox.ToString()
 	);
 }
 
+
+void AEsminiTester::WeatherDataUpdate_Implementation(FWeatherData& Data, int32 TargetIndex) {
+	UE_LOG(Esmini, Log,
+		TEXT("WeatherData { ID: %s, Enabled: %d, Type: %s, MOR: %.2f, TargetIndex: %d }"),
+		*Data.ID.ToString(),
+		Data.WeatherState.bWeatherEffectEnabled,
+		*Data.WeatherState.ActiveWeatherType.ToString(),
+		Data.WeatherState.MOR,
+		TargetIndex
+	);
+}
+
+void AEsminiTester::VRUDataUpdate_Implementation(FVRUDataUpdateData& Data) {
+	UE_LOG(Esmini, Log,
+		TEXT("VRUData {Provider: %s, Name: %s, Position: %s, BoundingBox: %s, Speed: %f}"),
+		*Data.Provider.ToString(),
+		*Data.Name.ToString(),
+		*Data.Position.ToString(),
+		*Data.BoundingBox.ToString(),
+		Data.speed
+		);
+}
